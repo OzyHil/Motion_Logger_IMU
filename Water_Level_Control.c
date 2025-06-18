@@ -111,7 +111,7 @@ int main()
 
     init_cyw43();                               // Inicializa a arquitetura CYW43
     connect_to_wifi();                          // Conecta ao Wi-Fi
-    struct tcp_pcb *server = init_tcp_server(); // Inicializa o servidor TCP
+    struct tcp_pcb* server = init_tcp_server(); // Inicializa o servidor TCP
 
     // Criação das tarefas
     // xTaskCreate(vTask_Display, "Task Person Entry", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);

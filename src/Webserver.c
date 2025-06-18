@@ -7,7 +7,6 @@ void init_cyw43()
     {
         //////////////////// Falha ao inicializar o Wi-Fi
         sleep_ms(100);
-        return -1;
     }
 
     // Coloca GPIO do módulo em nível baixo
@@ -26,7 +25,6 @@ void connect_to_wifi()
     {
         /////////////// Falha na conexão Wi-Fi
         sleep_ms(100);
-        return -1;
     }
 }
 
