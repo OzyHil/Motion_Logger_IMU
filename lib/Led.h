@@ -8,7 +8,6 @@
 #define BLUE_LED 12  
 #define RED_LED 13  
 #define WRAP_PWM_LED 5  // PWM para controle de brilho
-#define LED_PIN CYW43_WL_GPIO_LED_PIN // GPIO do CI CYW43
 
 // Estrutura para representar uma cor RGB
 typedef struct {
