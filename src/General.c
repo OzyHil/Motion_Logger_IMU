@@ -3,6 +3,8 @@
 // Função para inicializar a configuração do sistema
 void init_system_config()
 {
+    adc_init(); // Inicializa o conversor analógico-digital (ADC)
+    
     // Configura o relógio do sistema para 125 kHz (sistema de 32 bits com precisão de tempo)
     set_sys_clock_khz(125000, false);
 

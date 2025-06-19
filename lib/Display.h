@@ -15,6 +15,6 @@ void configure_display(); // Função para configurar o display
 
 void clear_display(); // Função para limpar o display OLED
 
-void draw_info(uint8_t person_count, uint8_t max_people); // Função para desenhar informações no display OLED
+void draw_info(char *string); // Função para desenhar informações no display OLED
 
 #endif
