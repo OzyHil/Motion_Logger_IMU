@@ -59,6 +59,17 @@ void gpio_irq_handler(uint gpio, uint32_t events)
     }
 }
 
+void vTaskDisplay()
+{
+    while (1)
+    {
+        if (xSemaphoreTake(xDisplayMutex, portMAX_DELAY) == pdTRUE) // Tenta obter o mutex do display
+        {
+            draw_info(ipaddr_ntoa(&netif_default->ip_addr)); // Exibe no display
+            vTaskDelay(pdMS_TO_TICKS(500));                  // Aguarda 500 ms antes de repetir
+        }
+    }
+}
 void vTaskLedMatrix()
 {
     while (1)
@@ -109,16 +120,19 @@ int main()
     xLedPotentiometerMutex = xSemaphoreCreateMutex();
     xLedWaterMotorMutex = xSemaphoreCreateMutex();
 
+    draw_info("Iniciando..."); // Exibe a mensagem inicial no display
     init_cyw43();                               // Inicializa a arquitetura CYW43
+    draw_info("Conectando a rede..."); // Exibe a mensagem inicial no display
     connect_to_wifi();                          // Conecta ao Wi-Fi
-    struct tcp_pcb* server = init_tcp_server(); // Inicializa o servidor TCP
+    draw_info("Iniciando servidor..."); // Exibe a mensagem inicial no display
+    struct tcp_pcb *server = init_tcp_server(); // Inicializa o servidor TCP
 
     // Criação das tarefas
-    // xTaskCreate(vTask_Display, "Task Person Entry", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    xTaskCreate(vTaskDisplay, "Task Display", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     xTaskCreate(vTaskLedMatrix, "Task LedMatrix", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskLedRgb, "Task LedRgb", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskBuzzer, "Task Buzzer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
-    // xTaskCreate(vTaskButtonA, "Task Led ButtonA", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    // xTaskCreate(vTaskButtonA, "Task ButtonA", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonB, "Task ButtonB", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonJ, "Task ButtonJ", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskPotentiometer, "Task Potentiometer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
