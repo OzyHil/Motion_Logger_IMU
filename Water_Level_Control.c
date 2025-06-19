@@ -4,6 +4,7 @@
 #include "Button.h"
 #include "Display.h"
 #include "Led_Matrix.h"
+#include "Webserver.h"
 
 // Semáforos para controle de acesso e sincronização
 SemaphoreHandle_t xCountButtonASemaphore,
@@ -64,11 +65,17 @@ void vTaskLedMatrix()
     {
         if (xSemaphoreTake(xLedMatrixMutex, portMAX_DELAY) == pdTRUE) // Tenta obter o mutex da matriz de LEDs
         {
-            update_matrix_from_level(4, 8);    // Chama a função da tarefa da matriz de LEDs
+            update_matrix_from_level(4, 8);  // Chama a função da tarefa da matriz de LEDs
             xSemaphoreGive(xLedMatrixMutex); // Libera o mutex da matriz de LEDs
         }
         vTaskDelay(pdMS_TO_TICKS(500)); // Aguarda 500 ms antes de repetir
     }
+}
+
+void vTaskTCPServer()
+{
+    run_tcp_server_loop(); // Inicia o loop do servidor TCP
+    deinit_cyw43();        // Finaliza a arquitetura CYW43
 }
 
 int main()
@@ -102,16 +109,21 @@ int main()
     xLedPotentiometerMutex = xSemaphoreCreateMutex();
     xLedWaterMotorMutex = xSemaphoreCreateMutex();
 
+    init_cyw43();                               // Inicializa a arquitetura CYW43
+    connect_to_wifi();                          // Conecta ao Wi-Fi
+    struct tcp_pcb* server = init_tcp_server(); // Inicializa o servidor TCP
+
     // Criação das tarefas
     // xTaskCreate(vTask_Display, "Task Person Entry", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     xTaskCreate(vTaskLedMatrix, "Task LedMatrix", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskLedRgb, "Task LedRgb", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskBuzzer, "Task Buzzer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonA, "Task Led ButtonA", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
-    // xTaskCreate(vTask_ButtonB, "Task ButtonB", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
-    // xTaskCreate(vTask_Button_J, "Task ButtonJ", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
-    // xTaskCreate(vTask_Potentiometer, "Task Potentiometer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    // xTaskCreate(vTaskButtonB, "Task ButtonB", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    // xTaskCreate(vTaskButtonJ, "Task ButtonJ", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    // xTaskCreate(vTaskPotentiometer, "Task Potentiometer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskControlWaterMotor, "Task ControlWaterMotor", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    xTaskCreate(vTaskTCPServer, "Task TCP Server", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
 
     vTaskStartScheduler(); // Inicia o escalonador de tarefas
 

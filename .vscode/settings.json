@@ -39,6 +39,9 @@
     "raspberry-pi-pico.ninjaPath": "${HOME}/.pico-sdk/ninja/v1.12.1/ninja",
     "files.associations": {
         "*.txt": "cmake",
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "webserver.h": "c",
+        "general.h": "c",
+        "display.h": "c"
     }
 }
