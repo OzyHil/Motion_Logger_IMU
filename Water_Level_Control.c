@@ -5,6 +5,7 @@
 #include "Display.h"
 #include "Led_Matrix.h"
 #include "Webserver.h"
+#include "Potentiometer.h"
 
 // Semáforos para controle de acesso e sincronização
 SemaphoreHandle_t xCountButtonASemaphore,
@@ -14,8 +15,8 @@ SemaphoreHandle_t xCountButtonASemaphore,
     xLedMutex,
     xBuzzerMutex,
     xLedMatrixMutex,
-    xLedPotentiometerMutex,
-    xLedWaterMotorMutex;
+    xPotentiometerMutex,
+    xWaterMotorMutex;
 
 // Variáveis para controle de tempo de debounce dos botões
 uint last_time_button_A, last_time_button_B, last_time_button_J = 0;
@@ -66,10 +67,11 @@ void vTaskDisplay()
         if (xSemaphoreTake(xDisplayMutex, portMAX_DELAY) == pdTRUE) // Tenta obter o mutex do display
         {
             draw_info(ipaddr_ntoa(&netif_default->ip_addr)); // Exibe no display
-            vTaskDelay(pdMS_TO_TICKS(500));                  // Aguarda 500 ms antes de repetir
+            vTaskDelay(pdMS_TO_TICKS(400));                  // Aguarda 500 ms antes de repetir
         }
     }
 }
+
 void vTaskLedMatrix()
 {
     while (1)
@@ -78,6 +80,20 @@ void vTaskLedMatrix()
         {
             update_matrix_from_level(4, 8);  // Chama a função da tarefa da matriz de LEDs
             xSemaphoreGive(xLedMatrixMutex); // Libera o mutex da matriz de LEDs
+        }
+        vTaskDelay(pdMS_TO_TICKS(500)); // Aguarda 500 ms antes de repetir
+    }
+}
+
+void vTaskPotentiometer()
+{
+    while (1)
+    {
+        if (xSemaphoreTake(xPotentiometerMutex, portMAX_DELAY) == pdTRUE) // Tenta obter o mutex do potenciômetro
+        {
+            uint16_t value = read_potentiometer();      // Lê o valor do potenciômetro
+            xSemaphoreGive(xPotentiometerMutex);        // Libera o mutex do potenciômetro
+            printf("Potentiometer value: %d\n", value); // Exibe o valor lido
         }
         vTaskDelay(pdMS_TO_TICKS(500)); // Aguarda 500 ms antes de repetir
     }
@@ -117,14 +133,14 @@ int main()
     xLedMutex = xSemaphoreCreateMutex();
     xBuzzerMutex = xSemaphoreCreateMutex();
     xLedMatrixMutex = xSemaphoreCreateMutex();
-    xLedPotentiometerMutex = xSemaphoreCreateMutex();
-    xLedWaterMotorMutex = xSemaphoreCreateMutex();
+    xPotentiometerMutex = xSemaphoreCreateMutex();
+    xWaterMotorMutex = xSemaphoreCreateMutex();
 
-    draw_info("Iniciando..."); // Exibe a mensagem inicial no display
+    draw_info("Iniciando...");                  // Exibe a mensagem inicial no display
     init_cyw43();                               // Inicializa a arquitetura CYW43
-    draw_info("Conectando a rede..."); // Exibe a mensagem inicial no display
+    draw_info("Conectando a rede...");          // Exibe a mensagem inicial no display
     connect_to_wifi();                          // Conecta ao Wi-Fi
-    draw_info("Iniciando servidor..."); // Exibe a mensagem inicial no display
+    draw_info("Iniciando servidor...");         // Exibe a mensagem inicial no display
     struct tcp_pcb *server = init_tcp_server(); // Inicializa o servidor TCP
 
     // Criação das tarefas
@@ -135,7 +151,7 @@ int main()
     // xTaskCreate(vTaskButtonA, "Task ButtonA", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonB, "Task ButtonB", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonJ, "Task ButtonJ", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
-    // xTaskCreate(vTaskPotentiometer, "Task Potentiometer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    xTaskCreate(vTaskPotentiometer, "Task Potentiometer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskControlWaterMotor, "Task ControlWaterMotor", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     xTaskCreate(vTaskTCPServer, "Task TCP Server", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
 
