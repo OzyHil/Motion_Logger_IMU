@@ -29,6 +29,14 @@
 #include "task.h"
 #include "semphr.h"
 
+
+// Enum para definir os estados do sistema
+typedef enum
+{
+    SYSTEM_FILLING,
+    SYSTEM_DRAINING
+} system_state_t;
+
 // Função para inicializar a configuração do sistema (clocks, I/O, etc.)
 void init_system_config();
 

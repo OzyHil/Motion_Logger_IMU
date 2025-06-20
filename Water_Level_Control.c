@@ -7,13 +7,7 @@
 #include "Webserver.h"
 #include "Potentiometer.h"
 
-typedef enum
-{
-    SYSTEM_FILLING,
-    SYSTEM_DRAINING
-} system_state;
-
-system_state g_current_system_state;
+system_state_t g_current_system_state;      // Variável global para armazenar o estado atual do sistema
 
 // Semáforos para controle de acesso e sincronização
 SemaphoreHandle_t xCountButtonASemaphore,
