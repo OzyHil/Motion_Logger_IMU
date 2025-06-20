@@ -4,11 +4,12 @@
 #include "General.h"
 
 #define POTENTIOMETER_PIN 28 // Pino do potenciômetro
+#define KNOWN_RESISTOR 1000 
 
 // Função para configurar o potenciômetro
 void configure_potentiometer();
 
 // Função para ler o valor do potenciômetro
-uint16_t read_potentiometer();
+float read_potentiometer();
 
 #endif
