@@ -34,29 +34,23 @@ void gpio_irq_handler(uint gpio, uint32_t events)
 {
     uint32_t now = us_to_ms(get_absolute_time());
 
-    if (gpio == BUTTON_A)
+    if (gpio == BUTTON_A && (now - last_time_button_A > DEBOUNCE_TIME))
     {
-        if (now - last_time_button_A > DEBOUNCE_TIME)
-        {
-            last_time_button_A = now;
-            signal_task_from_isr(xCountButtonASemaphore);
-        }
+        last_time_button_A = now;
+        signal_task_from_isr(xCountButtonASemaphore);
+        
     }
-    else if (gpio == BUTTON_B)
-    {
-        if (now - last_time_button_B > DEBOUNCE_TIME)
-        {
-            last_time_button_B = now;
-            signal_task_from_isr(xCountButtonBSemaphore);
-        }
+    else if (gpio == BUTTON_B && (now - last_time_button_B > DEBOUNCE_TIME))
+    {        
+        last_time_button_B = now;
+        signal_task_from_isr(xCountButtonBSemaphore);
+        
     }
-    else if (gpio == BUTTON_J)
+    else if (gpio == BUTTON_J && (now - last_time_button_J > DEBOUNCE_TIME))
     {
-        if (now - last_time_button_J > DEBOUNCE_TIME)
-        {
-            last_time_button_J = now;
-            signal_task_from_isr(xButtonJSemaphore);
-        }
+        last_time_button_J = now;
+        signal_task_from_isr(xButtonJSemaphore);
+        
     }
 }
 
