@@ -7,6 +7,14 @@
 #include "Webserver.h"
 #include "Potentiometer.h"
 
+typedef enum
+{
+    SYSTEM_FILLING,
+    SYSTEM_DRAINING
+} system_state;
+
+system_state g_current_system_state;
+
 // Semáforos para controle de acesso e sincronização
 SemaphoreHandle_t xCountButtonASemaphore,
     xCountButtonBSemaphore,
@@ -16,7 +24,8 @@ SemaphoreHandle_t xCountButtonASemaphore,
     xBuzzerMutex,
     xLedMatrixMutex,
     xPotentiometerMutex,
-    xWaterMotorMutex;
+    xWaterMotorMutex,
+    xStateMutex;
 
 // Variáveis para controle de tempo de debounce dos botões
 uint last_time_button_A, last_time_button_B, last_time_button_J = 0;
@@ -74,12 +83,27 @@ void vTaskDisplay()
 
 void vTaskLedMatrix()
 {
+    system_state current_state;
+
     while (1)
     {
         if (xSemaphoreTake(xLedMatrixMutex, portMAX_DELAY) == pdTRUE) // Tenta obter o mutex da matriz de LEDs
         {
-            update_matrix_from_level(4, 8);  // Chama a função da tarefa da matriz de LEDs
-            xSemaphoreGive(xLedMatrixMutex); // Libera o mutex da matriz de LEDs
+            if (xSemaphoreTake(xStateMutex, portMAX_DELAY) == pdTRUE)
+            {
+                current_state = g_current_system_state; // Obtém o estado atual do sistema
+                xSemaphoreGive(xStateMutex);            // Libera o mutex do estado
+
+                if (current_state == SYSTEM_FILLING)
+                {
+                    update_matrix_from_level(6, 8); // Chama a função da tarefa da matriz de LEDs
+                }
+                else
+                {
+                    update_matrix_from_level(2, 8); // Chama a função da tarefa da matriz de LEDs
+                }
+                xSemaphoreGive(xLedMatrixMutex); // Libera o mutex da matriz de LEDs
+            }
         }
         vTaskDelay(pdMS_TO_TICKS(500)); // Aguarda 500 ms antes de repetir
     }
@@ -91,9 +115,24 @@ void vTaskPotentiometer()
     {
         if (xSemaphoreTake(xPotentiometerMutex, portMAX_DELAY) == pdTRUE) // Tenta obter o mutex do potenciômetro
         {
-            uint16_t value = read_potentiometer();      // Lê o valor do potenciômetro
-            xSemaphoreGive(xPotentiometerMutex);        // Libera o mutex do potenciômetro
-            printf("Potentiometer value: %d\n", value); // Exibe o valor lido
+            float value = read_potentiometer();           // Lê o valor do potenciômetro
+            xSemaphoreGive(xPotentiometerMutex);          // Libera o mutex do potenciômetro
+            printf("Potentiometer value: %.1f\n", value); // Exibe o valor lido
+
+            if (value < 2000.0)
+            {
+                if (xSemaphoreTake(xStateMutex, portMAX_DELAY) == pdTRUE)
+                {
+                    g_current_system_state = SYSTEM_FILLING;
+                    xSemaphoreGive(xStateMutex);
+                    printf("State changed to: FILLING\n");
+                }
+            }
+            else
+            {
+                g_current_system_state = SYSTEM_DRAINING; // Define o estado do sistema como drenando
+                printf("System state: Draining\n");
+            }
         }
         vTaskDelay(pdMS_TO_TICKS(500)); // Aguarda 500 ms antes de repetir
     }
@@ -135,6 +174,7 @@ int main()
     xLedMatrixMutex = xSemaphoreCreateMutex();
     xPotentiometerMutex = xSemaphoreCreateMutex();
     xWaterMotorMutex = xSemaphoreCreateMutex();
+    xStateMutex = xSemaphoreCreateMutex();
 
     draw_info("Iniciando...");                  // Exibe a mensagem inicial no display
     init_cyw43();                               // Inicializa a arquitetura CYW43

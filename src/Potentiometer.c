@@ -8,7 +8,18 @@ void configure_potentiometer()
 }
 
 // Função para ler a posição do potenciômetro e retornar o valor
-uint16_t read_potentiometer() {
-    adc_select_input(2); // Seleciona o canal 0 do ADC para ler o valor do potenciômetro
-    return adc_read(); // Lê o valor do potenciômetro e retorna
+float read_potentiometer() {
+    float sum = 0.0f;
+    adc_select_input(2);
+
+    for (int i = 0; i < 100; i++)
+    {
+        sum += adc_read();
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+
+    float average = sum / 100.0f;
+    float unknown_resistor = (KNOWN_RESISTOR * average) / (4095 - average);
+
+    return average;
 }

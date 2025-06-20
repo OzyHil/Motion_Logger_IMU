@@ -52,15 +52,18 @@ struct tcp_pcb *init_tcp_server()
     return server;
 }
 
-void run_tcp_server_loop() {
+void run_tcp_server_loop()
+{
     // Loop principal para manter o Wi-Fi ativo e escutar conexões
-    while (true) {
+    while (true)
+    {
         cyw43_arch_poll();
         vTaskDelay(100);
     }
 }
 
-void deinit_cyw43() {
+void deinit_cyw43()
+{
     // Finaliza a arquitetura CYW43
     cyw43_arch_deinit();
     vTaskDelete(NULL); // Deleta a tarefa atual
