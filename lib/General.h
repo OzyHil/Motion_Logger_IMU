@@ -29,6 +29,22 @@
 #include "task.h"
 #include "semphr.h"
 
+
+// Definição de constantes e macros
+#define MAX_WATER_CAPACITY 5000         // Capacidade máxima do reservatório de água em mililitros
+#define MIN_WATER_LEVEL 500            // Nível mínimo de água em mililitros
+#define MAX_WATER_LEVEL 4500           // Nível máximo de água em mililitros
+
+
+#define WATER_PUMP_PIN 16              // Pino da bomba de água
+
+// Enum para definir os estados do sistema
+typedef enum
+{
+    SYSTEM_FILLING,
+    SYSTEM_DRAINING
+} system_state_t;
+
 // Função para inicializar a configuração do sistema (clocks, I/O, etc.)
 void init_system_config();
 

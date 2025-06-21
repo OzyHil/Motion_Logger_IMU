@@ -19,7 +19,17 @@ float read_potentiometer() {
     }
 
     float average = sum / 100.0f;
-    float unknown_resistor = (KNOWN_RESISTOR * average) / (4095 - average);
-
+    
     return average;
+}
+
+// Função para mapear o valor lido do potenciômetro para um intervalo específico
+float map_reading(float value, float in_min, float in_max, float out_min, float out_max) {
+    // Verifica se o valor está dentro do intervalo de entrada
+    if (value < in_min || value > in_max) {
+        return -1.0f; // Retorna -1 se o valor estiver fora do intervalo
+    }
+    
+    // Mapeia o valor do intervalo de entrada para o intervalo de saída
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
