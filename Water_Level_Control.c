@@ -97,7 +97,7 @@ void vTaskLedMatrix()
     }
 }
 
-void vTaskPotentiometer()
+void vTaskControlSystem()
 {
     while (1)
     {
@@ -179,7 +179,7 @@ int main()
     // xTaskCreate(vTaskButtonA, "Task ButtonA", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonB, "Task ButtonB", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskButtonJ, "Task ButtonJ", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
-    xTaskCreate(vTaskPotentiometer, "Task Potentiometer", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
+    xTaskCreate(vTaskControlSystem, "Task Control System", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     // xTaskCreate(vTaskControlWaterMotor, "Task ControlWaterMotor", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
     xTaskCreate(vTaskTCPServer, "Task TCP Server", configMINIMAL_STACK_SIZE + 128, NULL, 1, NULL);
 
