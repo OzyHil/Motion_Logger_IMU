@@ -19,7 +19,6 @@ float read_potentiometer() {
     }
 
     float average = sum / 100.0f;
-    float unknown_resistor = (KNOWN_RESISTOR * average) / (4095 - average);
-
+    
     return average;
 }
