@@ -65,7 +65,7 @@ void display_water_system_info(float currente_water_level, float max_limit, floa
     char max_limit_str[10];
     char min_limit_str[10];
 
-    snprintf(current_level_str, sizeof(current_level_str), "%.1fmL", currente_water_level);
+    snprintf(current_level_str, sizeof(current_level_str), "%.fmL", currente_water_level);
     snprintf(max_limit_str, sizeof(max_limit_str), "%.fmL", max_limit);
     snprintf(min_limit_str, sizeof(min_limit_str), "%.fmL", min_limit);
 
