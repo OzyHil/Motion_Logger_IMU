@@ -12,13 +12,15 @@ system_state_t g_current_system_state = SYSTEM_DRAINING; // Variável global par
 float water_level = 0.0f;                                // Nível de água atual
 float water_level_max_limit = MAX_WATER_LEVEL;           // Limite máximo de nível de água
 float water_level_min_limit = MIN_WATER_LEVEL;           // Limite mínimo de nível de água
+bool pump_status = false;                            // Status da bomba de água (ligada/desligada)
 
 // Semáforos para controle de acesso e sincronização
 SemaphoreHandle_t DisplayModeSemaphore,
     xResetThresholds,
     xWaterLevelMutex,
     xWaterLimitsMutex,
-    xStateMutex;
+    xStateMutex,
+    xWaterPumpMutex;
 
 // Variáveis para controle de tempo de debounce dos botões
 uint last_time_button_A, last_time_button_B, last_time_button_J = 0;
@@ -270,6 +272,7 @@ int main()
     xResetThresholds = xSemaphoreCreateBinary();     // Semáforo binário para o botão J
 
     // Mutexs para controle de acesso e sincronização
+    xWaterPumpMutex = xSemaphoreCreateMutex();
     xWaterLevelMutex = xSemaphoreCreateMutex();
     xWaterLimitsMutex = xSemaphoreCreateMutex();
     xStateMutex = xSemaphoreCreateMutex();

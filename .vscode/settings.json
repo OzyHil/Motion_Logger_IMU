@@ -48,6 +48,7 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "string": "c"
+        "string": "c",
+        "led_matrix.h": "c"
     }
 }

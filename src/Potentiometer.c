@@ -20,6 +20,8 @@ float read_potentiometer() {
 
     float average = sum / 100.0f;
     
+    printf("adc: %.2f\n", average);
+
     return average;
 }
 
