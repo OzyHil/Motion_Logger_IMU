@@ -31,12 +31,14 @@ include(pico_sdk_import.cmake)
 set(FREERTOS_KERNEL_PATH "C:/FreeRTOS-Kernel")
 include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_import.cmake)
 
-project(Water_Level_Control C CXX ASM)
+project(Motion_Logger_IMU C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 include_directories(${CMAKE_SOURCE_DIR}/lib)
+
+add_subdirectory(lib/FatFs_SPI)   
 
 file(GLOB_RECURSE SRC_FILES ${CMAKE_SOURCE_DIR}/src/*.c)
 
@@ -52,7 +54,6 @@ target_include_directories(
     ${CMAKE_SOURCE_DIR}
     ${PICO_SDK_PATH}/lib/lwip/src/include
     ${PICO_SDK_PATH}/lib/lwip/src/include/arch
-    ${PICO_SDK_PATH}/lib/lwip/src/include/lwip
 )
 
 pico_generate_pio_header(
@@ -67,6 +68,10 @@ target_link_libraries(${PROJECT_NAME}
     hardware_adc
     hardware_pwm
     hardware_pio
+    hardware_rtc
+    hardware_dma
+    hardware_spi
+    FatFs_SPI
     FreeRTOS-Kernel 
     FreeRTOS-Kernel-Heap4
     pico_cyw43_arch_lwip_threadsafe_background
@@ -74,8 +79,6 @@ target_link_libraries(${PROJECT_NAME}
 
 target_sources(
     ${PROJECT_NAME} PRIVATE
-    ${PICO_SDK_PATH}/lib/lwip/src/apps/http/httpd.c
-    ${PICO_SDK_PATH}/lib/lwip/src/apps/http/fs.c
 )
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)

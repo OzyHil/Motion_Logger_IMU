@@ -1,11 +1,12 @@
 #include "Led.h" // Header para controle de LEDs via PWM
 
 // Definições de cores utilizando níveis PWM para cada canal RGB
-const led_color DARK = {.red = 0, .green = 0, .blue = 0};       // Sem cor
-const led_color GREEN = {.red = 0, .green = 1, .blue = 0};     // Verde
-const led_color ORANGE = {.red = 2, .green = 1, .blue = 0};  // Amarelo
-const led_color RED = {.red = 1, .green = 0, .blue = 0};      // Vermelho
-const led_color BLUE = {.red = 0, .green = 0, .blue = 1};      // Azul
+const led_color DARK = {.red = 0, .green = 0, .blue = 0};       
+const led_color GREEN = {.red = 0, .green = 1, .blue = 0};  
+const led_color RED = {.red = 1, .green = 0, .blue = 0};    
+const led_color BLUE = {.red = 0, .green = 0, .blue = 1};    
+const led_color YELLOW = {.red = 2, .green = 1, .blue = 0};  
+const led_color PURPLE = {.red = 1, .green = 0, .blue = 2};   
 
 // Inicializa os pinos dos LEDs RGB como PWM
 void configure_leds()

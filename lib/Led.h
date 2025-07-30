@@ -18,10 +18,11 @@ typedef struct {
 
 // Definições de cores para LEDs
 extern const led_color GREEN;
-extern const led_color ORANGE;
 extern const led_color DARK;
 extern const led_color RED;
 extern const led_color BLUE;
+extern const led_color YELLOW;
+extern const led_color PURPLE;
 
 // Inicializa os pinos dos LEDs
 void configure_leds();
